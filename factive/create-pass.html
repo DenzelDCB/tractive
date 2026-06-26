@@ -334,7 +334,18 @@
             }
         }
 
+        function setDefaultTimes() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            
+            document.getElementById('departureTime').value = `${today}T13:00`;
+            document.getElementById('arrivalTime').value = `${today}T13:05`;
+        }
+
         loadData();
+        
+        // Set default times after data loads
+        setDefaultTimes();
     </script>
 </body>
 </html>
