@@ -1,0 +1,68 @@
+{
+  "teachers": [
+    {
+      "id": 1,
+      "username": "Denzel",
+      "password": "$2a$10$e8sQ1RrCdnjKOC/.JFkGDeefPZmst/Erwhcvyve3ZMHncTDtbvt3G",
+      "full_name": "Denzel Babajide",
+      "created_at": "2026-06-26T15:25:03.828Z"
+    },
+    {
+      "id": 2,
+      "username": "Iyebiye",
+      "password": "$2a$10$Nic0fUq.MnYKO.ly3uOUxOtQYyWz6mtsNsk9WhiJXX4Q0PC0W8ALm",
+      "full_name": "Iyebiye Babajide",
+      "created_at": "2026-06-26T15:27:36.678Z"
+    }
+  ],
+  "students": [
+    {
+      "id": 1,
+      "name": "Shane Shapiro",
+      "created_at": "2026-06-26T15:28:48.224Z"
+    },
+    {
+      "id": 2,
+      "name": "Eniiyi Babajide",
+      "created_at": "2026-06-26T15:31:58.997Z"
+    }
+  ],
+  "passes": [
+    {
+      "id": 1,
+      "student_id": 1,
+      "from_teacher_id": 1,
+      "to_teacher_id": 2,
+      "from_class": "English 7+",
+      "to_class": "LCF",
+      "departure_time": "2026-06-26T11:29",
+      "arrival_time": "2026-06-26T11:33",
+      "status": "completed",
+      "created_at": "2026-06-26T15:29:05.983Z"
+    },
+    {
+      "id": 2,
+      "student_id": 2,
+      "from_teacher_id": 2,
+      "to_teacher_id": 1,
+      "from_class": "English 7+",
+      "to_class": "LCF",
+      "departure_time": "2026-06-26T11:32",
+      "arrival_time": "2026-06-26T11:36",
+      "status": "completed",
+      "created_at": "2026-06-26T15:32:25.627Z"
+    },
+    {
+      "id": 3,
+      "student_id": 1,
+      "from_teacher_id": 1,
+      "to_teacher_id": 2,
+      "from_class": "English 7+",
+      "to_class": "LCF",
+      "departure_time": "2026-06-26T11:33",
+      "arrival_time": "2026-06-26T11:34",
+      "status": "active",
+      "created_at": "2026-06-26T15:33:25.706Z"
+    }
+  ]
+}
