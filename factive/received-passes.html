@@ -332,7 +332,7 @@
                         </div>
                         ${pass.status === 'active' ? `
                             <div class="pass-actions">
-                                <button class="btn btn-success" onclick="updatePassStatus(${pass.id}, 'completed')">Mark as Arrived</button>
+                                <button class="btn btn-success" onclick="updatePassStatus('${pass._id}', 'completed')">Mark as Arrived</button>
                             </div>
                         ` : ''}
                     </div>
