@@ -7,8 +7,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'factive-secret-key-change-in-production';
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'factive-secret-key-change-in-production';
 
 // Middleware
 app.use(cors());
