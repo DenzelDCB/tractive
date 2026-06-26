@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factive - Verify Pass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .navbar .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .navbar button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-card h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #ff6b35;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #e55a2b;
+        }
+
+        .result-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .result-card.valid {
+            border-left: 4px solid #28a745;
+            display: block;
+        }
+
+        .result-card.invalid {
+            border-left: 4px solid #dc3545;
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-header .icon {
+            font-size: 2.5rem;
+        }
+
+        .result-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .result-header.valid h3 {
+            color: #28a745;
+        }
+
+        .result-header.invalid h3 {
+            color: #dc3545;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item .label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item .value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .info {
+            color: #004085;
+            background-color: #cce5ff;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Factive</h1>
+        <div class="user-info">
+            <span id="teacherName"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a class="back-link" onclick="window.location.href='dashboard.html'">← Back to Dashboard</a>
+
+        <div class="form-card">
+            <h2>Verify Student Pass</h2>
+
+            <div class="info">
+                Check if a student is meant to be in your class at this specific time.
+            </div>
+
+            <div class="form-group">
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" placeholder="Enter student name">
+            </div>
+
+            <div class="form-group">
+                <label for="className">Class Name</label>
+                <input type="text" id="className" placeholder="Enter your class name">
+            </div>
+
+            <button class="btn btn-primary" onclick="verifyPass()">Verify Pass</button>
+        </div>
+
+        <div class="loading" id="loading">Verifying...</div>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-header" id="resultHeader">
+                <div class="icon" id="resultIcon"></div>
+                <h3 id="resultTitle"></h3>
+            </div>
+            <div id="resultReason" style="margin-bottom: 1rem; color: #666;"></div>
+            <div class="result-details" id="resultDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('teacher');
+            window.location.href = 'login.html';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
+        async function verifyPass() {
+            const studentName = document.getElementById('studentName').value;
+            const className = document.getElementById('className').value;
+
+            if (!studentName || !className) {
+                alert('Please fill in both student name and class name');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').className = 'result-card';
+
+            try {
+                const response = await fetch(`${API_URL}/passes/verify?student_name=${encodeURIComponent(studentName)}&class_name=${encodeURIComponent(className)}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+
+                document.getElementById('loading').style.display = 'none';
+
+                const resultCard = document.getElementById('resultCard');
+                const resultHeader = document.getElementById('resultHeader');
+                const resultIcon = document.getElementById('resultIcon');
+                const resultTitle = document.getElementById('resultTitle');
+                const resultReason = document.getElementById('resultReason');
+                const resultDetails = document.getElementById('resultDetails');
+
+                if (data.valid) {
+                    resultCard.className = 'result-card valid';
+                    resultHeader.className = 'result-header valid';
+                    resultIcon.textContent = '✅';
+                    resultTitle.textContent = 'Valid Pass';
+                    resultReason.textContent = '';
+                    resultDetails.innerHTML = `
+                        <div class="detail-item">
+                            <span class="label">Student</span>
+                            <span class="value">${data.pass.student_name}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">From Class</span>
+                            <span class="value">${data.pass.from_class}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">To Class</span>
+                            <span class="value">${data.pass.to_class}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Departure Time</span>
+                            <span class="value">${formatDate(data.pass.departure_time)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Arrival Time</span>
+                            <span class="value">${formatDate(data.pass.arrival_time)}</span>
+                        </div>
+                    `;
+                } else {
+                    resultCard.className = 'result-card invalid';
+                    resultHeader.className = 'result-header invalid';
+                    resultIcon.textContent = '❌';
+                    resultTitle.textContent = 'Invalid Pass';
+                    resultReason.textContent = data.reason || 'No active pass found';
+                    
+                    if (data.pass) {
+                        resultDetails.innerHTML = `
+                            <div class="detail-item">
+                                <span class="label">Student</span>
+                                <span class="value">${data.pass.student_name}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">From Class</span>
+                                <span class="value">${data.pass.from_class}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">To Class</span>
+                                <span class="value">${data.pass.to_class}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Departure Time</span>
+                                <span class="value">${formatDate(data.pass.departure_time)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Arrival Time</span>
+                                <span class="value">${formatDate(data.pass.arrival_time)}</span>
+                            </div>
+                        `;
+                    } else {
+                        resultDetails.innerHTML = '';
+                    }
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Failed to verify pass. Please try again.');
+            }
+        }
+
+        // Load teacher info
+        const teacher = JSON.parse(localStorage.getItem('teacher'));
+        if (teacher) {
+            document.getElementById('teacherName').textContent = teacher.full_name;
+        } else {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

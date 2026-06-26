@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factive - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .navbar .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .navbar button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .welcome {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .welcome h2 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            color: #ff6b35;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .card .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Factive</h1>
+        <div class="user-info">
+            <span id="teacherName"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome">
+            <h2>Welcome back, <span id="welcomeName"></span>!</h2>
+            <p>Manage student passes and verify attendance efficiently.</p>
+        </div>
+
+        <div class="cards">
+            <div class="card" onclick="window.location.href='create-pass.html'">
+                <div class="icon">📝</div>
+                <h3>Create Pass</h3>
+                <p>Create a virtual pass for a student to move between classes</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='received-passes.html'">
+                <div class="icon">📥</div>
+                <h3>Received Passes</h3>
+                <p>View passes sent to you from other teachers</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='verify-pass.html'">
+                <div class="icon">✓</div>
+                <h3>Verify Pass</h3>
+                <p>Check if a student is meant to be in your class</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='manage-students.html'">
+                <div class="icon">👥</div>
+                <h3>Manage Students</h3>
+                <p>Add and view students in the system</p>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" id="passesCreated">0</div>
+                <div class="label">Passes Created</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="passesReceived">0</div>
+                <div class="label">Passes Received</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalStudents">0</div>
+                <div class="label">Total Students</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('teacher');
+            window.location.href = 'login.html';
+        }
+
+        async function loadDashboard() {
+            const teacher = JSON.parse(localStorage.getItem('teacher'));
+            if (!teacher) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('teacherName').textContent = teacher.full_name;
+            document.getElementById('welcomeName').textContent = teacher.full_name.split(' ')[0];
+
+            try {
+                // Load stats
+                const [createdRes, receivedRes, studentsRes] = await Promise.all([
+                    fetch(`${API_URL}/passes/created`, { headers: getAuthHeaders() }),
+                    fetch(`${API_URL}/passes/received`, { headers: getAuthHeaders() }),
+                    fetch(`${API_URL}/students`, { headers: getAuthHeaders() })
+                ]);
+
+                const created = await createdRes.json();
+                const received = await receivedRes.json();
+                const students = await studentsRes.json();
+
+                document.getElementById('passesCreated').textContent = created.length || 0;
+                document.getElementById('passesReceived').textContent = received.length || 0;
+                document.getElementById('totalStudents').textContent = students.length || 0;
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>

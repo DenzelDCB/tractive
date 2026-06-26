@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factive - Received Passes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .navbar .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .navbar button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+        }
+
+        .passes-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .pass-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #ff6b35;
+        }
+
+        .pass-card.active {
+            border-left-color: #28a745;
+        }
+
+        .pass-card.completed {
+            border-left-color: #6c757d;
+            opacity: 0.7;
+        }
+
+        .pass-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .pass-header h3 {
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .pass-header .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status.completed {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .pass-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item .label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item .value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .pass-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Factive</h1>
+        <div class="user-info">
+            <span id="teacherName"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a class="back-link" onclick="window.location.href='dashboard.html'">← Back to Dashboard</a>
+
+        <div class="page-header">
+            <h2>Received Passes</h2>
+            <p>View passes sent to you from other teachers</p>
+        </div>
+
+        <div id="passesContainer" class="passes-grid">
+            <div class="loading">Loading passes...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('teacher');
+            window.location.href = 'login.html';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
+        async function updatePassStatus(passId, status) {
+            try {
+                const response = await fetch(`${API_URL}/passes/${passId}/status`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ status })
+                });
+
+                if (response.ok) {
+                    loadPasses();
+                }
+            } catch (error) {
+                console.error('Failed to update pass status:', error);
+            }
+        }
+
+        async function loadPasses() {
+            const teacher = JSON.parse(localStorage.getItem('teacher'));
+            if (!teacher) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('teacherName').textContent = teacher.full_name;
+
+            try {
+                const response = await fetch(`${API_URL}/passes/received`, { headers: getAuthHeaders() });
+                const passes = await response.json();
+
+                const container = document.getElementById('passesContainer');
+
+                if (passes.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📭</div>
+                            <h3>No passes received yet</h3>
+                            <p>When other teachers create passes for you to receive, they will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = passes.map(pass => `
+                    <div class="pass-card ${pass.status}">
+                        <div class="pass-header">
+                            <h3>${pass.student_name}</h3>
+                            <span class="status ${pass.status}">${pass.status.toUpperCase()}</span>
+                        </div>
+                        <div class="pass-details">
+                            <div class="detail-item">
+                                <span class="label">From</span>
+                                <span class="value">${pass.from_teacher_name}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">From Class</span>
+                                <span class="value">${pass.from_class}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">To Class</span>
+                                <span class="value">${pass.to_class}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Departure</span>
+                                <span class="value">${formatDate(pass.departure_time)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Arrival</span>
+                                <span class="value">${formatDate(pass.arrival_time)}</span>
+                            </div>
+                        </div>
+                        ${pass.status === 'active' ? `
+                            <div class="pass-actions">
+                                <button class="btn btn-success" onclick="updatePassStatus(${pass.id}, 'completed')">Mark as Arrived</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load passes:', error);
+                document.getElementById('passesContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <h3>Failed to load passes</h3>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        loadPasses();
+    </script>
+</body>
+</html>

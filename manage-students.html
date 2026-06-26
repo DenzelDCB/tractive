@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factive - Manage Students</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .navbar .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .navbar button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-card h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #ff6b35;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #e55a2b;
+        }
+
+        .students-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .students-card h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .student-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #ff6b35;
+        }
+
+        .student-item .name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .student-item .id {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Factive</h1>
+        <div class="user-info">
+            <span id="teacherName"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a class="back-link" onclick="window.location.href='dashboard.html'">← Back to Dashboard</a>
+
+        <div class="page-header">
+            <h2>Manage Students</h2>
+            <p>Add students to the system and view all registered students</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="form-card">
+                <h3>Add New Student</h3>
+
+                <div class="error" id="error"></div>
+                <div class="success" id="success"></div>
+
+                <div class="form-group">
+                    <label for="studentName">Student Name</label>
+                    <input type="text" id="studentName" placeholder="Enter student name">
+                </div>
+
+                <button class="btn btn-primary" onclick="addStudent()">Add Student</button>
+            </div>
+
+            <div class="students-card">
+                <h3>All Students</h3>
+                <div id="studentsList" class="student-list">
+                    <div class="loading">Loading students...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('teacher');
+            window.location.href = 'login.html';
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            document.getElementById('success').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('success');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        async function addStudent() {
+            const name = document.getElementById('studentName').value;
+
+            if (!name) {
+                showError('Please enter a student name');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/students`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ name })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('Student added successfully!');
+                    document.getElementById('studentName').value = '';
+                    loadStudents();
+                } else {
+                    showError(data.error || 'Failed to add student');
+                }
+            } catch (error) {
+                showError('Connection error. Please try again.');
+            }
+        }
+
+        async function loadStudents() {
+            const teacher = JSON.parse(localStorage.getItem('teacher'));
+            if (!teacher) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('teacherName').textContent = teacher.full_name;
+
+            try {
+                const response = await fetch(`${API_URL}/students`, { headers: getAuthHeaders() });
+                const students = await response.json();
+
+                const container = document.getElementById('studentsList');
+
+                if (students.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">👥</div>
+                            <h3>No students yet</h3>
+                            <p>Add students to the system to get started.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = students.map(student => `
+                    <div class="student-item">
+                        <span class="name">${student.name}</span>
+                        <span class="id">ID: ${student.id}</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load students:', error);
+                document.getElementById('studentsList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <h3>Failed to load students</h3>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        loadStudents();
+    </script>
+</body>
+</html>
